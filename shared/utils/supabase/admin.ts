@@ -1,6 +1,6 @@
 import { toDateTime } from '@/shared/utils/helpers';
 import { stripe } from '@/shared/utils/stripe/config';
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
 import type { Database, Tables, TablesInsert } from 'types_db';
 
@@ -13,12 +13,21 @@ const TRIAL_PERIOD_DAYS = 0;
 // Note: supabaseAdmin uses the SERVICE_ROLE_KEY which you must only use in a secure server-side context
 // as it has admin privileges and overwrites RLS policies!
 
-export const supabaseAdmin = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || '',
-);
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+
+let supabaseAdmin: SupabaseClient<Database> | null = null;
+
+if (SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) {
+  supabaseAdmin = createClient<Database>(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+} else {
+  console.warn('Supabase URL or Service Role Key is not provided. Some functionalities may not work as expected.');
+}
+
+export { supabaseAdmin };
 
 const upsertInvoiceRecord = async (invoice: Stripe.Invoice) => {
+  if (!supabaseAdmin) throw new Error('Supabase client is not initialized.');
   const customerId = invoice.customer as string;
   const userId = await retrieveUserIdFromCustomerId(customerId);
 
@@ -56,6 +65,7 @@ const upsertInvoiceRecord = async (invoice: Stripe.Invoice) => {
 };
 
 const upsertProductRecord = async (product: Stripe.Product) => {
+  if (!supabaseAdmin) throw new Error('Supabase client is not initialized.');
   const productData: Product = {
     id: product.id,
     active: product.active,
@@ -78,6 +88,7 @@ const upsertPriceRecord = async (
   retryCount = 0,
   maxRetries = 3,
 ) => {
+  if (!supabaseAdmin) throw new Error('Supabase client is not initialized.');
   const priceData: Partial<Price> = {
     id: price.id,
     product_id: typeof price.product === 'string' ? price.product : '',
@@ -112,6 +123,7 @@ const upsertPriceRecord = async (
 };
 
 const deleteProductRecord = async (product: Stripe.Product) => {
+  if (!supabaseAdmin) throw new Error('Supabase client is not initialized.');
   const { error: deletionError } = await supabaseAdmin
     .from('products')
     .delete()
@@ -122,6 +134,7 @@ const deleteProductRecord = async (product: Stripe.Product) => {
 };
 
 const deletePriceRecord = async (price: Stripe.Price) => {
+  if (!supabaseAdmin) throw new Error('Supabase client is not initialized.');
   const { error: deletionError } = await supabaseAdmin
     .from('prices')
     .delete()
@@ -132,6 +145,7 @@ const deletePriceRecord = async (price: Stripe.Price) => {
 };
 
 const upsertCustomerToSupabase = async (uuid: string, customerId: string) => {
+  if (!supabaseAdmin) throw new Error('Supabase client is not initialized.');
   const { error: upsertError } = await supabaseAdmin
     .from('customers')
     .upsert([{ id: uuid, stripe_customer_id: customerId }]);
@@ -160,6 +174,7 @@ const createCustomerInStripe = async (uuid: string, email: string) => {
 };
 
 const retrieveUserIdFromCustomerId = async (customerId: string) => {
+  if (!supabaseAdmin) throw new Error('Supabase client is not initialized.');
   const { data: customerData, error: noCustomerError } = await supabaseAdmin
     .from('customers')
     .select('id')
@@ -172,6 +187,7 @@ const retrieveUserIdFromCustomerId = async (customerId: string) => {
   return customerData.id;
 };
 const retrieveUserStripeCustomerId = async (uuid: string) => {
+  if (!supabaseAdmin) throw new Error('Supabase client is not initialized.');
   // Check if the customer already exists in Supabase
   const { data: existingSupabaseCustomer, error: queryError } =
     await supabaseAdmin
@@ -197,6 +213,7 @@ const createOrRetrieveStripeCustomer = async ({
   email: string;
   uuid: string;
 }) => {
+  if (!supabaseAdmin) throw new Error('Supabase client is not initialized.');
   // Check if the customer already exists in Supabase
   const { data: existingSupabaseCustomer, error: queryError } =
     await supabaseAdmin
@@ -280,6 +297,7 @@ const copyBillingDetailsToCustomer = async (
   uuid: string,
   payment_method: Stripe.PaymentMethod,
 ) => {
+  if (!supabaseAdmin) throw new Error('Supabase client is not initialized.');
   //Todo: check this assertion
   const customer = payment_method.customer as string;
   const { name, phone, address } = payment_method.billing_details;
@@ -302,6 +320,7 @@ const manageSubscriptionStatusChange = async (
   customerId: string,
   createAction = false,
 ) => {
+  if (!supabaseAdmin) throw new Error('Supabase client is not initialized.');
   // Get customer's UUID from mapping table.
   const { data: customerData, error: noCustomerError } = await supabaseAdmin
     .from('customers')
@@ -374,6 +393,7 @@ const manageSubscriptionStatusChange = async (
 };
 
 const increaseUserCredit = async (uuid: string, amount: number) => {
+  if (!supabaseAdmin) throw new Error('Supabase client is not initialized.');
   const { credit: currentCredit, credit_count } = await getUserCredit(uuid);
   // Increase credit amount
   const newCredit = currentCredit + amount;
@@ -404,6 +424,7 @@ const increaseUserCredit = async (uuid: string, amount: number) => {
 };
 
 const getUserCreditPlan = async (uuid: string) => {
+  if (!supabaseAdmin) throw new Error('Supabase client is not initialized.');
   const { data, error } = await supabaseAdmin
     .from('users')
     .select('credit_plan')
@@ -419,6 +440,7 @@ const getUserCreditPlan = async (uuid: string) => {
 };
 
 const getUserCredit = async (uuid: string) => {
+  if (!supabaseAdmin) throw new Error('Supabase client is not initialized.');
   const { data, error } = await supabaseAdmin
     .from('swarms_cloud_users_credits')
     .select('credit, free_credit, credit_count')
@@ -436,6 +458,7 @@ const getUserCredit = async (uuid: string) => {
 };
 
 const getStripeCustomerId = async (userId: string): Promise<string | null> => {
+  if (!supabaseAdmin) throw new Error('Supabase client is not initialized.');
   const { data, error } = await supabaseAdmin
     .from('customers')
     .select('stripe_customer_id')
