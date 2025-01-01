@@ -4,11 +4,19 @@ import PlatformNavBar from './components/navbar/navbar';
 import LayoutModals from './components/modal';
 
 const PanelLayout = async ({ children }: { children: React.ReactNode }) => {
-  const supabase = createClient();
+  let user = null;
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  try {
+    const supabase = createClient();
+    if (supabase) {
+      const {
+        data: { user: supabaseUser },
+      } = await supabase.auth.getUser();
+      user = supabaseUser;
+    }
+  } catch (error) {
+    console.log('Supabase client is not initialized. Running in local mode.');
+  }
 
   return (
     <>

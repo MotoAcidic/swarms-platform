@@ -1,3 +1,5 @@
+import { localTesting } from '../../../modules/globals/globals';
+
 // Boolean toggles to determine which auth types are allowed
 const allowOauth = true;
 const allowEmail = true;
@@ -46,4 +48,8 @@ export const getDefaultSignInView = (preferredSignInView: string | null) => {
 
 export const getRedirectMethod = () => {
   return allowServerRedirect ? 'server' : 'client';
+};
+
+export const shouldContinueTesting = () => {
+  return localTesting;
 };
