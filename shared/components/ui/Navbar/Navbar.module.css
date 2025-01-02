@@ -17,3 +17,19 @@
 .logo {
   @apply cursor-pointer rounded-full transform duration-100 ease-in-out;
 }
+
+.phantom-wallet-button {
+  @apply inline-flex items-center leading-6 font-medium transition ease-in-out duration-75 cursor-pointer text-zinc-200 rounded-md p-1;
+}
+
+.phantom-wallet-button:hover {
+  @apply text-red-500 !important;
+}
+
+.phantom-wallet-button:focus {
+  @apply outline-none text-zinc-100 ring-2 ring-pink-500 ring-opacity-50;
+}
+
+.wallet-info {
+  @apply flex items-center gap-2;
+}

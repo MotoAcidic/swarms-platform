@@ -16,6 +16,7 @@ import NavbarSearch from './components/search';
 import { trpc } from '@/shared/utils/trpc/trpc';
 import Avatar from '@/shared/components/avatar';
 import { NAVIGATION, SWARMS_GITHUB } from '@/shared/constants/links';
+import { PhantomWalletButton } from '@/shared/components/wallet/PhantomWalletButton';
 
 export default function PlatformNavBar({ user }: { user: User | null }) {
   const dropdownRef = useRef(null);
@@ -87,6 +88,7 @@ export default function PlatformNavBar({ user }: { user: User | null }) {
               </li>
             ))}
           </ul>
+          <PhantomWalletButton />
           <div
             className="relative ml-5 cursor-pointer max-sm:mt-1"
             onClick={setOn}

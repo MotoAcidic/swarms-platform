@@ -13,6 +13,7 @@ import { cn } from '@/shared/utils/cn';
 import { Drawer, DrawerContent, DrawerTrigger, DrawerClose } from '../drawer';
 import { Button } from '../Button';
 import { Menu, X } from 'lucide-react';
+import { PhantomWalletButton } from '@/shared/components/wallet/PhantomWalletButton';
 
 interface NavlinksProps {
   user?: any;
@@ -30,6 +31,7 @@ export default function Navlinks({ user }: NavlinksProps) {
         {/* desktop */}
         <div className="flex items-center w-[40px] h-[40px] min-w-[40px] max-md:hidden">
           <Logo />
+          
         </div>
         <nav className="flex ml-2 md:ml-6 gap-3 max-md:hidden">
           {!isSwarmsPath && (
@@ -48,11 +50,10 @@ export default function Navlinks({ user }: NavlinksProps) {
           <Link href="https://docs.swarms.world/en/latest/" className={s.link}>
             Docs
           </Link>
-          {user && (
-            <Link href={PLATFORM.DASHBOARD} className={s.link}>
-              Dashboard
-            </Link>
-          )}
+          <Link href="https://calendly.com/swarm-corp/30min" className={s.link}>
+            Get Demo
+          </Link>
+          
         </nav>
         {/* mobile */}
         <div className="md:hidden">
@@ -126,9 +127,6 @@ export default function Navlinks({ user }: NavlinksProps) {
             Sign Up
           </Link>
         )}
-        <Link href="https://calendly.com/swarm-corp/30min" className={s.link}>
-          Get Demo
-        </Link>
       </div>
     </div>
   );
