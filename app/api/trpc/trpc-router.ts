@@ -30,7 +30,7 @@ const getFingerprint = (req: any) => {
 };
 export const userProcedure = publicProcedure
   .use(async (opts) => {
-    const ip = getFingerprint(opts.ctx.req);
+    const ip = await getFingerprint(opts.ctx.req);
     try {
       await rateLimiter.consume(ip);
     } catch (e) {
