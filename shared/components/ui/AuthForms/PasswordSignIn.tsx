@@ -11,11 +11,13 @@ import React, { useState } from 'react';
 interface PasswordSignInProps {
   allowEmail: boolean;
   redirectMethod: string;
+  loading?: boolean;
 }
 
 export default function PasswordSignIn({
   allowEmail,
   redirectMethod,
+  loading,
 }: PasswordSignInProps) {
   const router = redirectMethod === 'client' ? useRouter() : null;
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -60,7 +62,6 @@ export default function PasswordSignIn({
             variant="outline"
             type="submit"
             className="mt-1"
-            loading={isSubmitting}
           >
             Sign in
           </Button>

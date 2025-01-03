@@ -28,12 +28,15 @@ export default async function SignIn({
   const viewTypes = getViewTypes();
   const redirectMethod = getRedirectMethod();
 
+  // Await params before using its properties
+  const awaitedParams = await Promise.resolve(params);
+
   // Declare 'viewProp' and initialize with the default value
   let viewProp: string;
 
   // Assign url id to 'viewProp' if it's a valid string and ViewTypes includes it
-  if (typeof params.id === 'string' && viewTypes.includes(params.id)) {
-    viewProp = params.id;
+  if (typeof awaitedParams.id === 'string' && viewTypes.includes(awaitedParams.id)) {
+    viewProp = awaitedParams.id;
   } else {
     const preferredSignInView =
       (await cookies()).get('preferredSignInView')?.value || null;
