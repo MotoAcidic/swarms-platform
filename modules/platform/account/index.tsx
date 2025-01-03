@@ -9,7 +9,7 @@ import { createClient } from '@/shared/utils/supabase/server';
 
 export default async function Account() {
   //TODO: SWITCH TO AUTH MODALS INSTEAD
-  const supabase = createClient();
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
