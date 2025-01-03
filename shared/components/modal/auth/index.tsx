@@ -8,7 +8,6 @@ import { Button } from '@/shared/components/ui/Button';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/shared/utils/cn';
-import { shouldContinueTesting } from '@/shared/utils/auth-helpers/settings';
 
 const pathnames = [
   '/signin',
@@ -18,7 +17,6 @@ const pathnames = [
   '/tool/',
   '/swarms'
 ];
-
 function AuthModal() {
   const { isAuthModalOpen } = useAuthContext();
   const router = useRouter();
@@ -27,7 +25,7 @@ function AuthModal() {
   const handleLogin = () => router.push('/signin');
   const handleSignup = () => router.push('/signin/signup');
 
-  if (shouldContinueTesting() || pathnames.some((name) => pathname?.includes(name))) {
+  if (pathnames.some((name) => pathname?.includes(name))) {
     return null;
   }
 

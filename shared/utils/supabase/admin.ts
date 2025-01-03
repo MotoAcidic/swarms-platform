@@ -16,13 +16,13 @@ const TRIAL_PERIOD_DAYS = 0;
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
-if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-  console.warn('Supabase URL or Service Role Key is not provided. Some functionalities may not work as expected.');
-} else {
-  supabaseAdmin = createClient<Database>(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-}
-
 let supabaseAdmin: SupabaseClient<Database> | null = null;
+
+if (SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) {
+  supabaseAdmin = createClient<Database>(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+} else {
+  console.warn('Supabase URL or Service Role Key is not provided. Some functionalities may not work as expected.');
+}
 
 export { supabaseAdmin };
 

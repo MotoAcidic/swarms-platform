@@ -8,7 +8,7 @@ import {
   getErrorRedirect,
   getStatusRedirect,
 } from '@/shared/utils/helpers';
-import { getAuthTypes, shouldContinueTesting } from '@/shared/utils/auth-helpers/settings';
+import { getAuthTypes } from '@/shared/utils/auth-helpers/settings';
 import { PLATFORM } from '@/shared/constants/links';
 import { User } from '@supabase/supabase-js';
 import { createOrRetrieveStripeCustomer } from '../supabase/admin';
@@ -55,11 +55,6 @@ export async function afterSignin(user: User) {
 }
 
 export async function checkUserSession() {
-  if (shouldContinueTesting()) {
-    console.warn('Bypassing login for testing purposes.');
-    return { id: 'test-user-id' }; // Return a mock user object
-  }
-
   const supabase = createClient();
   const {
     data: { user },
@@ -70,7 +65,6 @@ export async function checkUserSession() {
   }
   return user;
 }
-
 export async function redirectToPath(path: string) {
   return redirect(path);
 }

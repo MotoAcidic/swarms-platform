@@ -22,17 +22,10 @@ export default async function Layout({
   children: React.ReactNode;
 }) {
   const supabase = createClient();
-  let user = null;
 
-  if (supabase) {
-    const {
-      data: { user: supabaseUser },
-    } = await supabase.auth.getUser();
-    user = supabaseUser;
-  } else {
-    console.log('Supabase client is not initialized. Running in local mode.');
-  }
-
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={helvetica.className}>
